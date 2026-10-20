@@ -1,10 +1,12 @@
 let pagos = [];
 let gastoTotal = 0;
 let resumenMostrado = false;
-function regristarPago(nombre,precio){
+
+
+function registrarPago(nombre,precio){
  precio = Number(precio);
 
-    if (!nombre || precio < 0) {
+    if (nombre === ""|| precio <= 0) {
         alert("Los datos del pago no son válidos");
         return;
     }
@@ -16,7 +18,11 @@ function regristarPago(nombre,precio){
 
     pagos.push(nombre);
     gastoTotal += precio;
+    console.log(pagos)
+     console.log(gastoTotal)
 }
+
+
 function finalizarTramite(){
 if (pagos.length === 0) {
         alert("No se ha registrado ningún pago");
@@ -33,4 +39,31 @@ let resumen = [];
             resumen.push({ nombre: nombre, cantidad: 1 });
         }
     });
+
+    resumen.sort((primero, segundo) => {
+        if (primero.cantidad !== segundo.cantidad) {
+            return segundo.cantidad - primero.cantidad;
+        }
+        if (primero.nombre > segundo.nombre) {
+            return -1;
+        }
+        if (primero.nombre < segundo.nombre) {
+            return 1;
+        }
+        return 0;
+    });
+
+    let texto = "";
+
+    resumen.forEach(gasto => {
+    let palabra;
+    
+    if (gasto.cantidad === 1) {
+        palabra = "pagos";
+    } else {
+        palabra = "pago";
+    }
+
+    texto += gasto.nombre + " ---- " + gasto.cantidad + " " + palabra;
+});
 }
