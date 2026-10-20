@@ -59,11 +59,16 @@ let resumen = [];
     let palabra;
     
     if (gasto.cantidad === 1) {
-        palabra = "pagos";
-    } else {
         palabra = "pago";
+    } else {
+        palabra = "pagos";
     }
 
-    texto += gasto.nombre + " ---- " + gasto.cantidad + " " + palabra;
+    texto += gasto.nombre + " ---- " + gasto.cantidad + " " + palabra + "\n";
 });
+
+    let media = gastoTotal / pagos.length;
+        texto += "\nGasto final: " + gastoTotal.toFixed(2) + " €";
+        texto += "\nGasto medio: " + media.toFixed(2) + " €/concepto";
+        document.getElementById("resumenGastos").value = texto;
 }
