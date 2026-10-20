@@ -72,6 +72,6 @@ let resumen = [];
         texto += "\nGasto medio: " + media.toFixed(2) + " €/concepto";
         document.getElementById("resumenGastos").value = texto;
     pagos = [];
-gastoTotal = 0;
-resumenMostrado = true;
+    gastoTotal = 0;
+    resumenMostrado = true;
 }
