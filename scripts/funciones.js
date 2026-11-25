@@ -32,13 +32,20 @@ let conceptos = [];
 let tramiteActual;
 let resumenActual = [];
 let tramiteFinalizado = false;
-let categorias = {
+const categorias = {
     CULT: "Cultura",
     ALI: "Alimentación",
     DEP: "Deportes",
     OC: "Ocio",
     S_BAS: "Servicios básicos"
 };
+
+function formatearEuro(importe, decimales) {
+    return importe.toLocaleString("es-ES", {
+        minimumFractionDigits: decimales,
+        maximumFractionDigits: decimales
+    });
+}
 
 function mostrarConceptos() {
     let contenedor = document.getElementById("conceptos");
@@ -68,8 +75,15 @@ function mostrarConceptos() {
 }
 
 function iniciarTramite() {
-    let mes = prompt("Introduce el mes del trámite");
-    let ano = prompt("Introduce el año del trámite");
+    let mes = parseInt(prompt("Introduce el mes del trámite"));
+    let ano = parseInt(prompt("Introduce el año del trámite"));
+
+    while (isNaN(mes) || mes < 1 || mes > 12 || isNaN(ano) || ano < 1) {
+        alert("El mes o el año no son válidos");
+        mes = parseInt(prompt("Introduce el mes del trámite"));
+        ano = parseInt(prompt("Introduce el año del trámite"));
+    }
+
     tramiteActual = new Tramite(mes, ano);
 }
 
@@ -113,10 +127,7 @@ function mostrarPago(concepto, importe) {
     let historial = document.getElementById("historialPagos");
     let linea = document.createElement("li");
 
-    linea.textContent = concepto.nombre + " " + importe.toLocaleString("es-ES", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }) + " €";
+    linea.textContent = concepto.nombre + " " + formatearEuro(importe, 2) + " €";
     linea.setAttribute("data-id-concepto", concepto.id);
     historial.appendChild(linea);
 
@@ -183,13 +194,14 @@ function finalizarTramite() {
 
     resumen.sort((primero, segundo) => segundo.cantidad - primero.cantidad);
 
-    let texto = "Fecha: " + new Date().toLocaleString("es-ES", {
+    let fechaHora = new Date().toLocaleString("es-ES", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit"
-    }).replace(",", "") + "\n";
+    }).replace(",", "");
+    let texto = "Fecha: " + fechaHora + "\n";
     let totalCentimos = 0;
 
     resumen.forEach(gasto => {
@@ -201,18 +213,15 @@ function finalizarTramite() {
 
         let importeMedio = gasto.importeTotal / gasto.cantidad;
         texto += gasto.nombre + " ---- " + gasto.cantidad + " " + palabra + " ---- ";
-        texto += importeMedio.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " € ---- ";
-        texto += gasto.importeTotal.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €\n";
+        texto += formatearEuro(importeMedio, 2) + " € ---- ";
+        texto += formatearEuro(gasto.importeTotal, 2) + " €\n";
         totalCentimos += Math.round(gasto.importeTotal * 100);
     });
 
     let total = totalCentimos / 100;
     let gastoMedio = total / resumen.length;
     texto += "Gasto final: " + Math.floor(total).toLocaleString("es-ES") + " €";
-    texto += "\nGasto medio: " + gastoMedio.toLocaleString("es-ES", {
-        minimumFractionDigits: 3,
-        maximumFractionDigits: 3
-    }) + " €/concepto";
+    texto += "\nGasto medio: " + formatearEuro(gastoMedio, 3) + " €/concepto";
 
     document.getElementById("resumenGastos").value = texto;
     resumenActual = resumen;

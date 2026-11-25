@@ -47,7 +47,6 @@ section img {
 
 section p {
     margin: 4px 0;
-    font-family: sans-serif;
 }
 
 footer {
@@ -63,14 +62,12 @@ footer textarea {
     width: 100%;
     height: 100px;
     padding: 10px;
-    font-family: sans-serif;
     resize: none;               
 }
 
 footer button {
     padding: 10px 20px;
     cursor: pointer;
-    font-family: sans-serif;
 }
 
 #panelPagos {
