@@ -3,6 +3,13 @@ let mesTramite;
 let anoTramite;
 let pagos = [];
 let resumenMostrado = false;
+let categorias = {
+    CULT: "Cultura",
+    ALI: "Alimentación",
+    DEP: "Deportes",
+    OC: "Ocio",
+    S_BAS: "Servicios básicos"
+};
 
 function mostrarConceptos() {
     let contenedor = document.getElementById("conceptos");
@@ -19,7 +26,6 @@ function mostrarConceptos() {
         importe.type = "number";
         importe.min = "0.01";
         importe.step = "0.01";
-        importe.setAttribute("aria-label", "Importe de " + concepto.nombre);
 
         imagen.addEventListener("click", function () {
             registrarPago(concepto, importe.value, importe);
@@ -96,6 +102,31 @@ function mostrarPago(concepto, importe) {
     }
 }
 
+function mostrarDetalles(resumen) {
+    let ventana = document.getElementById("detalleConceptos");
+    let lista = document.getElementById("listaDetalles");
+
+    while (lista.firstChild) {
+        lista.removeChild(lista.firstChild);
+    }
+
+    resumen.forEach(gasto => {
+        let concepto = conceptos.find(item => item.id === gasto.idConcepto);
+        let detalle = document.createElement("li");
+        let tipo = "prescindible";
+        let categoria = categorias[concepto.categoria];
+
+        if (concepto.imprescindible) {
+            tipo = "imprescindible";
+        }
+
+        detalle.textContent = concepto.nombre + " es un gasto " + tipo + " de categoría " + categoria + ".";
+        lista.appendChild(detalle);
+    });
+
+    ventana.showModal();
+}
+
 
 function finalizarTramite() {
     if (pagos.length === 0) {
@@ -155,6 +186,11 @@ function finalizarTramite() {
     }) + " €/concepto";
 
     document.getElementById("resumenGastos").value = texto;
+    mostrarDetalles(resumen);
     pagos = [];
     resumenMostrado = true;
 }
+
+document.getElementById("cerrarDetalle").addEventListener("click", function () {
+    document.getElementById("detalleConceptos").close();
+});
