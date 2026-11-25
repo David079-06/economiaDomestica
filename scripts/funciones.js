@@ -2,7 +2,6 @@ let conceptos = [];
 let mesTramite;
 let anoTramite;
 let pagos = [];
-let gastoTotal = 0;
 let resumenMostrado = false;
 
 function mostrarConceptos() {
@@ -71,7 +70,6 @@ function registrarPago(concepto, importe, entradaImporte){
     }
 
     pagos.push({ idConcepto: concepto.id, nombre: concepto.nombre, importe: precio });
-    gastoTotal += precio;
     entradaImporte.value = "";
     mostrarPago(concepto, precio);
 }
@@ -99,18 +97,19 @@ function mostrarPago(concepto, importe) {
 }
 
 
-function finalizarTramite(){
-if (pagos.length === 0) {
+function finalizarTramite() {
+    if (pagos.length === 0) {
         alert("No se ha registrado ningún pago");
         return;
     }
-let resumen = [];
+
+    let resumen = [];
 
     pagos.forEach(pago => {
-        let gasto = resumen.find(gasto => gasto.idConcepto === pago.idConcepto);
+        let gasto = resumen.find(item => item.idConcepto === pago.idConcepto);
 
         if (gasto) {
-            gasto.cantidad++;
+            gasto.cantidad += 1;
             gasto.importeTotal += pago.importe;
         } else {
             resumen.push({
@@ -122,38 +121,40 @@ let resumen = [];
         }
     });
 
-    resumen.sort((primero, segundo) => {
-        if (primero.cantidad !== segundo.cantidad) {
-            return segundo.cantidad - primero.cantidad;
-        }
-        if (primero.nombre > segundo.nombre) {
-            return -1;
-        }
-        if (primero.nombre < segundo.nombre) {
-            return 1;
-        }
-        return 0;
-    });
+    resumen.sort((primero, segundo) => segundo.cantidad - primero.cantidad);
 
-    let texto = "";
+    let texto = "Fecha: " + new Date().toLocaleString("es-ES", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    }).replace(",", "") + "\n";
+    let totalCentimos = 0;
 
     resumen.forEach(gasto => {
-    let palabra;
-    
-    if (gasto.cantidad === 1) {
-        palabra = "pago";
-    } else {
-        palabra = "pagos";
-    }
+        let palabra = "pagos";
 
-    texto += gasto.nombre + " ---- " + gasto.cantidad + " " + palabra + "\n";
-});
+        if (gasto.cantidad === 1) {
+            palabra = "pago";
+        }
 
-    let media = gastoTotal / pagos.length;
-        texto += "\nGasto final: " + gastoTotal.toFixed(2) + " €";
-        texto += "\nGasto medio: " + media.toFixed(2) + " €/concepto";
-        document.getElementById("resumenGastos").value = texto;
+        let importeMedio = gasto.importeTotal / gasto.cantidad;
+        texto += gasto.nombre + " ---- " + gasto.cantidad + " " + palabra + " ---- ";
+        texto += importeMedio.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " € ---- ";
+        texto += gasto.importeTotal.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €\n";
+        totalCentimos += Math.round(gasto.importeTotal * 100);
+    });
+
+    let total = totalCentimos / 100;
+    let gastoMedio = total / resumen.length;
+    texto += "Gasto final: " + Math.floor(total).toLocaleString("es-ES") + " €";
+    texto += "\nGasto medio: " + gastoMedio.toLocaleString("es-ES", {
+        minimumFractionDigits: 3,
+        maximumFractionDigits: 3
+    }) + " €/concepto";
+
+    document.getElementById("resumenGastos").value = texto;
     pagos = [];
-    gastoTotal = 0;
     resumenMostrado = true;
 }
