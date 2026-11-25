@@ -1,8 +1,37 @@
+class Tramite {
+    constructor(mes, ano) {
+        this.mes = mes;
+        this.ano = ano;
+        this.pagos = [];
+    }
+
+    agregarPago(pago) {
+        this.pagos.push(pago);
+    }
+
+    crearRegistro(resumen) {
+        let pagosRegistro = [];
+
+        resumen.forEach(gasto => {
+            pagosRegistro.push({
+                idConcepto: gasto.idConcepto,
+                numPagos: gasto.cantidad,
+                importeTotal: gasto.importeTotal
+            });
+        });
+
+        return {
+            mes: this.mes,
+            ano: this.ano,
+            pagos: pagosRegistro
+        };
+    }
+}
+
 let conceptos = [];
-let mesTramite;
-let anoTramite;
-let pagos = [];
-let resumenMostrado = false;
+let tramiteActual;
+let resumenActual = [];
+let tramiteFinalizado = false;
 let categorias = {
     CULT: "Cultura",
     ALI: "Alimentación",
@@ -39,8 +68,9 @@ function mostrarConceptos() {
 }
 
 function iniciarTramite() {
-    mesTramite = prompt("Introduce el mes del trámite");
-    anoTramite = prompt("Introduce el año del trámite");
+    let mes = prompt("Introduce el mes del trámite");
+    let ano = prompt("Introduce el año del trámite");
+    tramiteActual = new Tramite(mes, ano);
 }
 
 function cargarConceptos() {
@@ -65,17 +95,16 @@ cargarConceptos();
 function registrarPago(concepto, importe, entradaImporte){
     let precio = Number(importe);
 
+    if (!tramiteActual || tramiteFinalizado) {
+        return;
+    }
+
     if (isNaN(precio) || !isFinite(precio) || precio <= 0) {
         alert("No se puede registrar un pago sin un importe mayor que 0");
         return;
     }
 
-    if (resumenMostrado) {
-        document.getElementById("resumenGastos").value = "";
-        resumenMostrado = false;
-    }
-
-    pagos.push({ idConcepto: concepto.id, nombre: concepto.nombre, importe: precio });
+    tramiteActual.agregarPago({ idConcepto: concepto.id, nombre: concepto.nombre, importe: precio });
     entradaImporte.value = "";
     mostrarPago(concepto, precio);
 }
@@ -129,14 +158,14 @@ function mostrarDetalles(resumen) {
 
 
 function finalizarTramite() {
-    if (pagos.length === 0) {
+    if (!tramiteActual || tramiteActual.pagos.length === 0 || tramiteFinalizado) {
         alert("No se ha registrado ningún pago");
         return;
     }
 
     let resumen = [];
 
-    pagos.forEach(pago => {
+    tramiteActual.pagos.forEach(pago => {
         let gasto = resumen.find(item => item.idConcepto === pago.idConcepto);
 
         if (gasto) {
@@ -186,11 +215,49 @@ function finalizarTramite() {
     }) + " €/concepto";
 
     document.getElementById("resumenGastos").value = texto;
-    mostrarDetalles(resumen);
-    pagos = [];
-    resumenMostrado = true;
+    resumenActual = resumen;
+    mostrarDetalles(resumenActual);
+    tramiteFinalizado = true;
+    setTimeout(guardarTramite, 10000);
 }
 
 document.getElementById("cerrarDetalle").addEventListener("click", function () {
     document.getElementById("detalleConceptos").close();
 });
+
+function guardarTramite() {
+    let registro = tramiteActual.crearRegistro(resumenActual);
+
+    fetch("http://localhost:3000/registros", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(registro)
+    })
+        .then(response => response.json())
+        .then(() => limpiarTramite())
+        .catch(error => alert("No se pudo guardar el trámite: " + error.message));
+}
+
+function limpiarTramite() {
+    let historial = document.getElementById("historialPagos");
+    let entradas = document.getElementById("conceptos").getElementsByTagName("input");
+
+    while (historial.firstChild) {
+        historial.removeChild(historial.firstChild);
+    }
+
+    for (let i = 0; i < entradas.length; i += 1) {
+        entradas[i].value = "";
+    }
+
+    document.getElementById("resumenGastos").value = "";
+
+    if (document.getElementById("detalleConceptos").open) {
+        document.getElementById("detalleConceptos").close();
+    }
+
+    tramiteActual = null;
+    resumenActual = [];
+    tramiteFinalizado = false;
+    iniciarTramite();
+}
