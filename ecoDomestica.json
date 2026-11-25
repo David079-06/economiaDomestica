@@ -1,0 +1,26 @@
+{
+  "conceptos": [
+    {
+      "id": "1",
+      "nombre": "Luz",
+      "img": "./imagenes/Electricidad.jpg",
+      "imprescindible": true,
+      "categoria": "S_BAS"
+    },
+    {
+      "id": "2",
+      "nombre": "Agua",
+      "img": "./imagenes/agua.jpg",
+      "imprescindible": true,
+      "categoria": "S_BAS"
+    },
+    {
+      "id": "3",
+      "nombre": "Pinchos",
+      "img": "./imagenes/Ocio.jpg",
+      "imprescindible": false,
+      "categoria": "OC"
+    }
+  ],
+  "registros": []
+}

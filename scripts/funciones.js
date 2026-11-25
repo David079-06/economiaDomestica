@@ -1,3 +1,47 @@
+let conceptos = [];
+let mesTramite;
+let anoTramite;
+
+function mostrarConceptos() {
+    let contenedor = document.getElementById("conceptos");
+
+    conceptos.forEach(concepto => {
+        let tarjeta = document.createElement("div");
+        let imagen = document.createElement("img");
+        let nombre = document.createElement("p");
+
+        imagen.src = concepto.img;
+        imagen.alt = concepto.nombre;
+        nombre.textContent = concepto.nombre;
+
+        tarjeta.appendChild(imagen);
+        tarjeta.appendChild(nombre);
+        contenedor.appendChild(tarjeta);
+    });
+}
+
+function iniciarTramite() {
+    mesTramite = prompt("Introduce el mes del trámite");
+    anoTramite = prompt("Introduce el año del trámite");
+}
+
+function cargarConceptos() {
+    fetch("http://localhost:3000/conceptos")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("No se pudieron cargar los conceptos");
+            }
+            return response.json();
+        })
+        .then(datos => {
+            conceptos = datos;
+            mostrarConceptos();
+            iniciarTramite();
+        })
+        .catch(error => alert(error.message));
+}
+
+cargarConceptos();
 let pagos = [];
 let gastoTotal = 0;
 let resumenMostrado = false;
