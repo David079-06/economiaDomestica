@@ -1,6 +1,9 @@
 let conceptos = [];
 let mesTramite;
 let anoTramite;
+let pagos = [];
+let gastoTotal = 0;
+let resumenMostrado = false;
 
 function mostrarConceptos() {
     let contenedor = document.getElementById("conceptos");
@@ -9,13 +12,23 @@ function mostrarConceptos() {
         let tarjeta = document.createElement("div");
         let imagen = document.createElement("img");
         let nombre = document.createElement("p");
+        let importe = document.createElement("input");
 
         imagen.src = concepto.img;
         imagen.alt = concepto.nombre;
         nombre.textContent = concepto.nombre;
+        importe.type = "number";
+        importe.min = "0.01";
+        importe.step = "0.01";
+        importe.setAttribute("aria-label", "Importe de " + concepto.nombre);
+
+        imagen.addEventListener("click", function () {
+            registrarPago(concepto, importe.value, importe);
+        });
 
         tarjeta.appendChild(imagen);
         tarjeta.appendChild(nombre);
+        tarjeta.appendChild(importe);
         contenedor.appendChild(tarjeta);
     });
 }
@@ -42,16 +55,13 @@ function cargarConceptos() {
 }
 
 cargarConceptos();
-let pagos = [];
-let gastoTotal = 0;
-let resumenMostrado = false;
 
 
-function registrarPago(nombre,precio){
- precio = Number(precio);
+function registrarPago(concepto, importe, entradaImporte){
+    let precio = Number(importe);
 
-    if (nombre === ""|| precio <= 0) {
-        alert("Los datos del pago no son válidos");
+    if (isNaN(precio) || !isFinite(precio) || precio <= 0) {
+        alert("No se puede registrar un pago sin un importe mayor que 0");
         return;
     }
 
@@ -60,10 +70,9 @@ function registrarPago(nombre,precio){
         resumenMostrado = false;
     }
 
-    pagos.push(nombre);
+    pagos.push({ idConcepto: concepto.id, nombre: concepto.nombre, importe: precio });
     gastoTotal += precio;
-    console.log(pagos)
-     console.log(gastoTotal)
+    entradaImporte.value = "";
 }
 
 
@@ -74,13 +83,19 @@ if (pagos.length === 0) {
     }
 let resumen = [];
 
-    pagos.forEach(nombre => {
-        let gasto = resumen.find(gasto => gasto.nombre === nombre);
+    pagos.forEach(pago => {
+        let gasto = resumen.find(gasto => gasto.idConcepto === pago.idConcepto);
 
         if (gasto) {
             gasto.cantidad++;
+            gasto.importeTotal += pago.importe;
         } else {
-            resumen.push({ nombre: nombre, cantidad: 1 });
+            resumen.push({
+                idConcepto: pago.idConcepto,
+                nombre: pago.nombre,
+                cantidad: 1,
+                importeTotal: pago.importe
+            });
         }
     });
 
