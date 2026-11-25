@@ -73,6 +73,29 @@ function registrarPago(concepto, importe, entradaImporte){
     pagos.push({ idConcepto: concepto.id, nombre: concepto.nombre, importe: precio });
     gastoTotal += precio;
     entradaImporte.value = "";
+    mostrarPago(concepto, precio);
+}
+
+function mostrarPago(concepto, importe) {
+    let historial = document.getElementById("historialPagos");
+    let linea = document.createElement("li");
+
+    linea.textContent = concepto.nombre + " " + importe.toLocaleString("es-ES", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }) + " €";
+    linea.setAttribute("data-id-concepto", concepto.id);
+    historial.appendChild(linea);
+
+    let lineas = historial.getElementsByTagName("li");
+
+    for (let i = 0; i < lineas.length; i += 1) {
+        if (lineas[i].getAttribute("data-id-concepto") === String(concepto.id)) {
+            lineas[i].classList.add("destacado");
+        } else {
+            lineas[i].classList.remove("destacado");
+        }
+    }
 }
 
 

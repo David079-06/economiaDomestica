@@ -7,12 +7,21 @@
     <title>Economía doméstica</title>
 </head>
 <body>
-    <section id="conceptos"></section>
+    <div class="pagina">
+        <main class="contenido-principal">
+            <section id="conceptos"></section>
 
-    <footer>
-        <textarea name="resumenGastos" id="resumenGastos" cols="20" rows="10"></textarea>
-        <button type="button" onclick="finalizarTramite()">Finalizar trámite</button>
-    </footer>
+            <footer>
+                <textarea name="resumenGastos" id="resumenGastos" cols="20" rows="10"></textarea>
+                <button type="button" onclick="finalizarTramite()">Finalizar trámite</button>
+            </footer>
+        </main>
+
+        <aside id="panelPagos">
+            <h2>Pagos realizados</h2>
+            <ul id="historialPagos"></ul>
+        </aside>
+    </div>
 
     <script src="./scripts/funciones.js"></script>
 </body>

@@ -1,7 +1,33 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+    overflow: hidden;
+}
+
+.pagina {
+    display: grid;
+    grid-template-columns: 75% 25%;
+    height: 100vh;
+}
+
+.contenido-principal {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
 section {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     padding: 20px;
+}
+
+#conceptos {
+    flex: 1;
 }
 
 
@@ -29,8 +55,7 @@ footer {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 40px auto 20px auto;
-    max-width: 500px;
+    margin: 10px;
     gap: 15px;                 
 }
 
@@ -46,4 +71,34 @@ footer button {
     padding: 10px 20px;
     cursor: pointer;
     font-family: sans-serif;
+}
+
+#panelPagos {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 16px;
+    border-left: 1px solid #cccccc;
+    background-color: #f4f4f4;
+    overflow: hidden;
+}
+
+#panelPagos h2 {
+    margin-top: 0;
+}
+
+#historialPagos {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-y: auto;
+}
+
+#historialPagos li {
+    margin-bottom: 6px;
+    padding: 8px;
+}
+
+.destacado {
+    background-color: #ffe28a;
 }
